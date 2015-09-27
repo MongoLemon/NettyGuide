@@ -5,6 +5,13 @@ import java.net.Socket;
 /**
  * Created by AnthonySU on 9/23/15.
  */
+
+/**
+ * TimeServer 根据传入的参数设置监听端口, 如果没有参数传入则默认8080.
+ * 同时通过过无限循环来监听 Client 的链接.
+ * 如果没有 Client 接入, 则主线程阻塞在ServerSocket.accept()
+ * 当有 Client 接入的时候, 构造TimeServerHandler对象,使用它为参数创建一个新的 Client 线程 处理这条 Socket 链路
+ */
 public class TimeServer {
 
     public static void main(String[] args) throws IOException {
