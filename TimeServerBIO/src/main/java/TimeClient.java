@@ -7,6 +7,12 @@ import java.net.Socket;
 /**
  * Created by AnthonySU on 9/23/15.
  */
+
+/**
+ * Client 通过Socket 创建 通过 PrintWriter out 发送查询时间的"QUERY TIME ORDER"指令, 然后
+ * 通过in.readLine() 读取Server 的 response 并将结果打印, 随后关闭链接
+ * 释放资源
+ */
 public class TimeClient {
 
     public static void main(String[] args) {
