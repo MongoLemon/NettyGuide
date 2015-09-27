@@ -12,6 +12,10 @@ import java.util.TimeZone;
 /**
  * Created by AnthonySU on 9/23/15.
  */
+
+/**
+ * 如果请求为"QUERY TIME ORDER", 则获取最新的系统时间,通过PrintWrite out发送给 Client
+ */
 public class TimeServerHandler implements Runnable {
 
     private Socket socket;
