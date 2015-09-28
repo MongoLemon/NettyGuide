@@ -33,6 +33,15 @@ public class TimeServer {
             while(true) {
                 socket = server.accept();
                 new Thread(new TimeServerHandler(socket)).start(); // TimeServerHandler is a Runnable, create a new Thread here for current Socket
+
+                /**
+                 * below is the way of execute pool solution
+                 */
+//                TimeServerHandlerExecutePool singleExecutor = new TimeServerHandlerExecutePool(50, 10000);
+//                while (true) {
+//                    socket =  server.accept();
+//                    singleExecutor.execute(new TimeServerHandler(socket));
+//                }
             }
         } finally {
             if(server != null) {
