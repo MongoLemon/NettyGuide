@@ -11,6 +11,29 @@ import java.util.Set;
 
 /**
  * Created by AnthonySU on 9/28/15.
+ * MTimeServer的构造方法, 资源初始化,创建多路复用器Selector, ServerSocketChannel.
+ * 将ServerSocketChannel设置为 异步非阻塞模式, backlog=1024.
+ * 系统资源初始化后,将SeverSocketChannel注册到Selector, 监听SelectionKey.OP_ACCEPT操作位, 如果资源初始化失败则退出
+ *
+ * 在线程run方法中, while 循环体中循环遍历selector, 休眠时间为1s = 每隔1s被唤醒一次. 当有就绪状态的Channel 时,
+ * selector将返回就绪Channel的SelectionKey set,对之进行iterate 来进行为网络的异步读写操作.
+ *
+ * 在handleInput方法中 处理新接入的客户端请求消息, 根据SelectionKey的位操作来判断网络时间的类型.
+ * 通过ssc de accept()来接收客户端的链接请求并创建SocketChannel实例 --> 这一过程相当于完成TCP的三次握手,建立TCP物理链接.
+ * 这里TCP可以设置接收/发送缓冲区大小,但这里还没有设置.
+ *
+ * 随后创建了ByteBuffer进行客户端请求消息的读取.这里设置了大小为1K的缓冲区.
+ * 再调用sc.read(readBuffer) 读取请求码流.这个过程异步非阻塞,使用返回值进行判断,根据读取到的字节数,返回值有三种可能结果:
+ * 1. >0 : 读到了字节,对字节进行编码
+ * 2. =0 : 没有读取到字节,属于正常场景, 忽略
+ * 3. <0 : -1 的case,链路关闭, key cancel, socketChannel 关闭释放资源
+ *
+ * 在第 1 中case中,进行解码. 对readBuffer进行flip() 操作, flip的作用是将当前缓冲区当前的limit设置为position, position重置为0.
+ * 然后根据缓冲区的可读字节个数创建字节数组, readBuffer.get()操作将缓冲区可读的字节数组复制到新创建的字节数组中, 然后打印.
+ *
+ * doWrite 方法中将response异步发送给客户端. 首先将response编码成bytes, 并根据其大小创建ByteBuffer,
+ * 并用put(bytes)方法将字节组复制到缓冲区. 然后flip. 最后调用SocketChannel write方法将缓冲区中的字节组发送出去.
+ * "半包" 问题还没有解决
  */
 public class MultiplexerTimeServer implements Runnable {
 
@@ -46,6 +69,7 @@ public class MultiplexerTimeServer implements Runnable {
      */
 
     public void run() {
+        // iterate selector, sleep 1s
         while(!stop) {
             try {
                 selector.select(1000);
