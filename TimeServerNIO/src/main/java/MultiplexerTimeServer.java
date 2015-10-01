@@ -129,7 +129,7 @@ public class MultiplexerTimeServer implements Runnable {
                 if (readBytes > 0) {
                     readBuffer.flip();
                     byte[] bytes = new byte[readBuffer.remaining()];
-                    readBuffer.get(bytes);
+                    readBuffer.get(bytes); // this method transfer what inside buffer to destination array
 
                     // transfer the bytes to string body and print out
                     String body = new String(bytes, "UTF-8");
