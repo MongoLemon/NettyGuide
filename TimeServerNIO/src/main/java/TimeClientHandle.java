@@ -10,6 +10,15 @@ import java.util.Set;
 /**
  * Created by AnthonySU on 9/30/15.
  */
+
+/**
+ * 并未解决"半包"读写的问题, 但是仍旧具有一些优点
+ * 1. 有OP_CONNECT用来等待后续结果,不需要像之前的Client那样同步阻塞
+ *
+ * 2. SocketChannel的 读 写操作时异步的, 如果没有可以读写的数据,I/O通讯线程就会处理其他链路
+ *
+ * 3. 线程模型的优化: Selector 通过epoll实现,没有连接数限制,性能不会随着Client的连接数增加而线性下降
+ */
 public class TimeClientHandle implements Runnable {
     private String host;
     private int port;
